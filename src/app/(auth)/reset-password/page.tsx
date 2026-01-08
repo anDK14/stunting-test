@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -12,7 +12,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { resetPasswordSchema, type ResetPasswordInput } from '@/lib/validations/auth';
 import { Loader2, AlertCircle, CheckCircle2 } from 'lucide-react';
 
-export default function ResetPasswordPage() {
+function ResetPasswordForm() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const token = searchParams.get('token');
@@ -145,8 +145,8 @@ export default function ResetPasswordPage() {
                                     <div
                                         key={i}
                                         className={`h-1 flex-1 rounded-full ${i < passwordStrength.strength
-                                                ? passwordStrength.color
-                                                : 'bg-muted'
+                                            ? passwordStrength.color
+                                            : 'bg-muted'
                                             }`}
                                     />
                                 ))}
@@ -183,5 +183,22 @@ export default function ResetPasswordPage() {
                 </Button>
             </form>
         </AuthLayout>
+    );
+}
+
+export default function ResetPasswordPage() {
+    return (
+        <Suspense fallback={
+            <AuthLayout
+                title="Reset Password"
+                description="Memuat..."
+            >
+                <div className="flex items-center justify-center py-8">
+                    <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                </div>
+            </AuthLayout>
+        }>
+            <ResetPasswordForm />
+        </Suspense>
     );
 }
